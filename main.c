@@ -1,19 +1,17 @@
 #include "raylib.h"
 #include "mapa/mapa.h"
-
 #include <stdlib.h>
 #include <time.h>
 
 typedef enum {
+
     TELA_INICIAL,
+    TELA_SOBRE,
     MAPA
+
 } GameScreen;
 
 int main() {
-
-    // ========================================
-    // JANELA
-    // ========================================
 
     InitWindow(1200, 900, "VIGIA");
 
@@ -21,26 +19,38 @@ int main() {
 
     srand(time(NULL));
 
-    // ========================================
-    // TELAS
-    // ========================================
-
     GameScreen currentScreen = TELA_INICIAL;
 
-    double startTime = GetTime();
+    Rectangle botaoJogar = {
 
-    // ========================================
-    // MAPA
-    // ========================================
+        450,
+        320,
+
+        300,
+        70
+    };
+
+    Rectangle botaoSobre = {
+
+        450,
+        430,
+
+        300,
+        70
+    };
+
+    Rectangle botaoVoltar = {
+
+        30,
+        30,
+
+        180,
+        60
+    };
 
     Mapa mapa;
 
-    // linhas, colunas
     GerarMapa(&mapa, 15, 20);
-
-    // ========================================
-    // PLAYER
-    // ========================================
 
     Rectangle player = {
 
@@ -53,10 +63,6 @@ int main() {
 
     float speed = 4.0f;
 
-    // ========================================
-    // INIMIGO
-    // ========================================
-
     Vector2 enemyPos = {
 
         900,
@@ -65,74 +71,54 @@ int main() {
 
     float enemySpeed = 2.0f;
 
-    // ========================================
-    // LOOP PRINCIPAL
-    // ========================================
 
     while (!WindowShouldClose()) {
 
-        // ========================================
-        // TELA INICIAL
-        // ========================================
+        Vector2 mouse = GetMousePosition();
 
         if (currentScreen == TELA_INICIAL) {
 
-            if (GetTime() - startTime >= 4.0) {
+            if (CheckCollisionPointRec(mouse, botaoJogar) &&
+                IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
 
                 currentScreen = MAPA;
             }
+
+            if (CheckCollisionPointRec(mouse, botaoSobre) &&
+                IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+
+                currentScreen = TELA_SOBRE;
+            }
         }
 
-        // ========================================
-        // GAMEPLAY
-        // ========================================
+        else if (currentScreen == TELA_SOBRE) {
 
-        if (currentScreen == MAPA) {
+            if (CheckCollisionPointRec(mouse, botaoVoltar) &&
+                IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+
+                currentScreen = TELA_INICIAL;
+            }
+        }
+
+        else if (currentScreen == MAPA) {
 
             Rectangle oldPlayer = player;
 
-            // ========================================
-            // MOVIMENTO PLAYER
-            // ========================================
-
-            if (IsKeyDown(KEY_D)) {
-                player.x += speed;
-            }
-
-            if (IsKeyDown(KEY_A)) {
-                player.x -= speed;
-            }
-
-            if (IsKeyDown(KEY_W)) {
-                player.y -= speed;
-            }
-
-            if (IsKeyDown(KEY_S)) {
-                player.y += speed;
-            }
-
-            // ========================================
-            // COLISÃO MAPA
-            // ========================================
+            if (IsKeyDown(KEY_D)) player.x += speed;
+            if (IsKeyDown(KEY_A)) player.x -= speed;
+            if (IsKeyDown(KEY_W)) player.y -= speed;
+            if (IsKeyDown(KEY_S)) player.y += speed;
 
             if (ColisaoMapa(&mapa, player)) {
 
                 player = oldPlayer;
             }
 
-            // ========================================
-            // CENTRO PLAYER
-            // ========================================
-
             Vector2 playerCenter = {
 
                 player.x + player.width / 2,
                 player.y + player.height / 2
             };
-
-            // ========================================
-            // IA INIMIGO
-            // ========================================
 
             if (enemyPos.x < playerCenter.x) {
                 enemyPos.x += enemySpeed;
@@ -151,39 +137,132 @@ int main() {
             }
         }
 
-        // ========================================
-        // DESENHO
-        // ========================================
-
         BeginDrawing();
 
         ClearBackground(BLACK);
-
-        // ========================================
-        // TELA INICIAL
-        // ========================================
 
         if (currentScreen == TELA_INICIAL) {
 
             DrawText(
                 "VIGIA",
-                500,
-                400,
-                50,
+                470,
+                150,
+                70,
+                RED
+            );
+
+            // BOTÃO JOGAR
+            DrawRectangleRounded(
+                botaoJogar,
+                0.3f,
+                10,
+                DARKBLUE
+            );
+
+            DrawText(
+                "JOGAR",
+                535,
+                340,
+                35,
+                WHITE
+            );
+
+            // BOTÃO SOBRE
+            DrawRectangleRounded(
+                botaoSobre,
+                0.3f,
+                10,
+                DARKBLUE
+            );
+
+            DrawText(
+                "SOBRE O JOGO",
+                485,
+                450,
+                30,
                 WHITE
             );
         }
 
-        // ========================================
-        // MAPA
-        // ========================================
+        else if (currentScreen == TELA_SOBRE) {
+
+            DrawText(
+                "SOBRE O JOGO",
+                390,
+                120,
+                40,
+                WHITE
+            );
+
+            DrawText(
+                "VIGIA e um jogo arcade em labirinto.",
+                170,
+                240,
+                30,
+                WHITE
+            );
+
+            DrawText(
+                "O jogador deve explorar o mapa.",
+                170,
+                290,
+                30,
+                WHITE
+            );
+
+            DrawText(
+                "Colete itens e evite os inimigos.",
+                170,
+                340,
+                30,
+                WHITE
+            );
+
+            DrawText(
+                "Os inimigos ficam mais fortes.",
+                170,
+                390,
+                30,
+                WHITE
+            );
+
+            DrawText(
+                "A dificuldade aumenta a cada fase.",
+                170,
+                440,
+                30,
+                WHITE
+            );
+
+            DrawText(
+                "Sobreviva e consiga a maior pontuacao.",
+                170,
+                490,
+                30,
+                WHITE
+            );
+
+            // BOTÃO VOLTAR
+            DrawRectangleRounded(
+                botaoVoltar,
+                0.3f,
+                10,
+                DARKBLUE
+            );
+
+            DrawText(
+                "VOLTAR",
+                65,
+                48,
+                28,
+                WHITE
+            );
+        }
 
         else if (currentScreen == MAPA) {
 
-            // MAPA
             DesenharMapa(&mapa);
 
-            // PLAYER
             DrawCircle(
 
                 player.x + player.width / 2,
@@ -194,7 +273,7 @@ int main() {
                 YELLOW
             );
 
-            // INIMIGO
+
             DrawTriangle(
 
                 (Vector2){
