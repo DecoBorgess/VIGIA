@@ -1,8 +1,10 @@
 #include "raylib.h"
+
 #include "mapa/mapa.h"
-#include "telas.h"
-#include "player.h"
-#include "inimigo.h"
+#include "telas/telas.h"
+#include "player/player.h"
+#include "inimigo/inimigo.h"
+#include "projetil/tiro.h"
 
 #include <stdlib.h>
 #include <time.h>
@@ -56,6 +58,10 @@ int main() {
 
     float enemySpeed = 2.0f;
 
+    SistemaTiros sistemaTiros;
+
+    InicializarSistemaTiros(&sistemaTiros);
+
     while (!WindowShouldClose()) {
 
         Vector2 mouse = GetMousePosition();
@@ -81,6 +87,11 @@ int main() {
                 enemySpeed,
                 player
             );
+            
+            AtualizarSistemaTiros(
+                &sistemaTiros,
+                player
+            );
         }
 
         BeginDrawing();
@@ -101,6 +112,8 @@ int main() {
             DesenharPlayer(player);
 
             DesenharInimigo(enemyPos);
+
+            DesenharSistemaTiros(sistemaTiros);
         }
 
         EndDrawing();

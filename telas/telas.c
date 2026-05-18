@@ -1,4 +1,5 @@
 #include "telas.h"
+
 void DesenharTelaInicial() {
 
     DrawText(
@@ -10,9 +11,6 @@ void DesenharTelaInicial() {
     );
 }
 
-// ========================================
-// TELA SOBRE
-// ========================================
 void DesenharTelaSobre() {
 
     DrawText(
@@ -30,44 +28,100 @@ void DesenharTelaSobre() {
         30,
         WHITE
     );
+}
 
-    DrawText(
-        "O jogador deve explorar o mapa.",
-        170,
-        290,
-        30,
-        WHITE
-    );
+void AtualizarTela(
+    GameScreen *currentScreen,
+    Vector2 mouse,
+    Rectangle botaoJogar,
+    Rectangle botaoSobre,
+    Rectangle botaoVoltar
+) {
 
-    DrawText(
-        "Colete itens e evite os inimigos.",
-        170,
-        340,
-        30,
-        WHITE
-    );
+    if (*currentScreen == TELA_INICIAL) {
 
-    DrawText(
-        "Os inimigos ficam mais fortes.",
-        170,
-        390,
-        30,
-        WHITE
-    );
+        if (
+            CheckCollisionPointRec(mouse, botaoJogar) &&
+            IsMouseButtonPressed(MOUSE_LEFT_BUTTON)
+        ) {
 
-    DrawText(
-        "A dificuldade aumenta a cada fase.",
-        170,
-        440,
-        30,
-        WHITE
-    );
+            *currentScreen = MAPA;
+        }
 
-    DrawText(
-        "Sobreviva e consiga a maior pontuacao.",
-        170,
-        490,
-        30,
-        WHITE
-    );
+        if (
+            CheckCollisionPointRec(mouse, botaoSobre) &&
+            IsMouseButtonPressed(MOUSE_LEFT_BUTTON)
+        ) {
+
+            *currentScreen = SOBRE;
+        }
+    }
+
+    else if (*currentScreen == SOBRE) {
+
+        if (
+            CheckCollisionPointRec(mouse, botaoVoltar) &&
+            IsMouseButtonPressed(MOUSE_LEFT_BUTTON)
+        ) {
+
+            *currentScreen = TELA_INICIAL;
+        }
+    }
+}
+
+void DesenharTela(
+    GameScreen currentScreen,
+    Rectangle botaoJogar,
+    Rectangle botaoSobre,
+    Rectangle botaoVoltar
+) {
+
+    if (currentScreen == TELA_INICIAL) {
+
+        DesenharTelaInicial();
+
+        DrawRectangleRec(
+            botaoJogar,
+            DARKGREEN
+        );
+
+        DrawText(
+            "JOGAR",
+            530,
+            340,
+            30,
+            WHITE
+        );
+
+        DrawRectangleRec(
+            botaoSobre,
+            DARKBLUE
+        );
+
+        DrawText(
+            "SOBRE",
+            530,
+            450,
+            30,
+            WHITE
+        );
+    }
+
+    else if (currentScreen == SOBRE) {
+
+        DesenharTelaSobre();
+
+        DrawRectangleRec(
+            botaoVoltar,
+            RED
+        );
+
+        DrawText(
+            "VOLTAR",
+            50,
+            45,
+            30,
+            WHITE
+        );
+    }
 }
